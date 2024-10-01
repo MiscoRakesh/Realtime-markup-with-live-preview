@@ -1,25 +1,59 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import axios from "axios";
 
-function App() {
+const MarkdownEditor = () => {
+  const [markdown, setMarkdown] = useState("");
+  const [htmlOutput, setHtmlOutput] = useState("");
+
+  // Send the Markdown to the backend for conversion
+  const convertMarkdown = async (markdownText) => {
+    try {
+      const response = await axios.post("http://localhost:4000/convert", {
+        markdown: markdownText,
+      });
+      setHtmlOutput(response.data.html);
+    } catch (error) {
+      console.error("Error converting Markdown:", error);
+    }
+  };
+
+  // Handle user input and convert Markdown
+  const handleInputChange = (e) => {
+    const markdownText = e.target.value;
+    setMarkdown(markdownText);
+    convertMarkdown(markdownText); // Send the updated Markdown to the server
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      {/* Markdown Input Area */}
+      <div style={{ width: "48%" }}>
+        <h2>Markdown Input</h2>
+        <textarea
+          value={markdown}
+          onChange={handleInputChange}
+          style={{ width: "100%", height: "300px" }}
+          placeholder="Type Markdown here..."
+        />
+      </div>
+
+      {/* HTML Output Pane */}
+      <div style={{ width: "48%" }}>
+        <h2>HTML Output</h2>
+        <div
+          dangerouslySetInnerHTML={{ __html: htmlOutput }}
+          style={{
+            border: "1px solid #ddd",
+            padding: "10px",
+            height: "300px",
+            overflowY: "auto",
+            backgroundColor: "#f7f7f7",
+            whiteSpace: "pre-wrap",
+          }}
+        />
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default MarkdownEditor;
