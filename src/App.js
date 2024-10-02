@@ -8,9 +8,11 @@ const MarkdownEditor = () => {
   // Send the Markdown to the backend for conversion
   const convertMarkdown = async (markdownText) => {
     try {
-      const response = await axios.post("http://localhost:4000/convert", {
-        markdown: markdownText,
-      });
+      const response = await axios.post(
+        "http://localhost:4000/convert",
+        { markdown: markdownText },
+        { headers: { "Content-Type": "application/json" } } // Ensure the content type is set to JSON
+      );
       setHtmlOutput(response.data.html);
     } catch (error) {
       console.error("Error converting Markdown:", error);
